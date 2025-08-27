@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flashcards Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px;
+        }
+        .card {
+            width: 250px;
+            height: 150px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+        .inner {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .card.flipped .inner {
+            transform: rotateY(180deg);
+        }
+        .front, .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .front {
+            background: #f9f9f9;
+        }
+        .back {
+            background: #dfefff;
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body>
+    {% for question in questions %}
+    <div class="card" onclick="this.classList.toggle('flipped')">
+        <div class="inner">
+            <div class="front">
+                {{ question.text }}
+            </div>
+            <div class="back">
+                {% if question.question_type == 'YN' %}
+                    <!-- Yes/No question -->
+                    {% for choice in question.choices.all %}
+                        {% if choice.is_correct %}
+                            ✅ {{ choice.text }}
+                        {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <!-- Multiple choice (show correct answers only) -->
+                    {% for choice in question.choices.all %}
+                        {% if choice.is_correct %}
+                            ✅ {{ choice.text }} <br>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</body>
+</html>
