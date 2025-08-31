@@ -1,8 +1,8 @@
 # from . import views
 from django.urls import path
-from .views import FlashcardView
+from .views import flashcards
 
 urlpatterns = [
     # path('', views.HomePage.as_view(), name='home'),
-    path("", FlashcardView.as_view(), name="flashcards"),
+    path("", flashcards, name="flashcards"),
 ]
