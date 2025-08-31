@@ -1,6 +1,9 @@
+
+/* Flashcard */
+
 .flip-card {
   perspective: 1000px;
-  width: 300px;
+  width: 80%;
   height: 200px;
   cursor: pointer;
 }
