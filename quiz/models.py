@@ -13,6 +13,11 @@ class Question(models.Model):
         max_length=2, choices=QUESTION_TYPES, default="MC"
     )
 
+    is_flashcard = models.BooleanField(
+        default=True,
+        help_text="Use this question in flashcards?"
+    )  
+
     def __str__(self):
         return self.text[:50]  # Show only first 50 characters
 

@@ -12,7 +12,11 @@ class HomePage(TemplateView):
 
 
 def flashcards(request):
-    questions = Question.objects.prefetch_related('choices').all()
+    questions = (
+        Question.objects
+        .prefetch_related('choices')
+        .filter(is_flashcard=True)
+    )
     questions_json = [
         {
             'question': q.text,
