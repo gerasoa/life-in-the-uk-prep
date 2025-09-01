@@ -1,4 +1,5 @@
- var flashcards = JSON.parse(document.getElementById('flashcards-data').textContent);
+window.onload = function() {
+var flashcards = JSON.parse(document.getElementById('flashcards-data').textContent);
         let current = 0;
         let ultimos = [];
 
@@ -26,5 +27,6 @@
                 showFlashcard(current);
             }, 400);
         };
-
-        window.onload = function() { showFlashcard(current); };
+  showFlashcard(current);
+};
+        // window.onload = function() { showFlashcard(current); };

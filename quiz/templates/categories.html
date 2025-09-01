@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+<h1>Study by Category</h1>
+<div class="row">
+  {% for category in categories %}
+  <div class="col-md-4 mb-3">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">{{ category.name }}</h5>
+        <p>{{ category.num_questions }} questions</p>
+        <a href="{% url 'study_cards' category.id %}" class="btn btn-primary">Study</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h2>{{ category.name }} - Study Cards</h2>
+
+<div class="card mb-3">
+  <div class="card-body">
+    <h5>{{ question.text }}</h5>
+    <form method="post">
+      {% csrf_token %}
+      {% for choice in question.choices.all %}
+      <div class="form-check">
+       <input type="{{ input_type }}" name="selected_choices" value="{{ choice.id }}" id="choice{{ forloop.counter }}">
+        <label for="choice{{ forloop.counter }}">{{ choice.text }}</label>
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-success mt-2">Check Answer</button>
+    </form>
+  </div>
+</div>
+
+{% if result %}
+<div class="alert alert-info mt-2">
+  {% if result.is_correct %}✅ Correct!{% else %}❌ Incorrect{% endif %}
+  <br>
+  Correct: {{ result.correct_choices_text }}
+  <br>
+  Explanation: {{ result.explanation }}
+</div>
+{% endif %}
+{% endblock %}
