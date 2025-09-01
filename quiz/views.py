@@ -75,4 +75,3 @@ def study_cards_view(request, category_id):
         "result": result,
         "input_type": input_type,  # Passe para o template
     })
-
