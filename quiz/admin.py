@@ -9,8 +9,10 @@ class ChoiceInline(admin.TabularInline):
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
-    list_display = ("text", "question_type")
-    inlines = [ChoiceInline]    
+    list_display = ("text", "question_type", "category")
+    list_filter = ("question_type", "category")
+    search_fields = ("text",)
+    inlines = [ChoiceInline]
 
 
 @admin.register(Choice)
@@ -22,3 +24,4 @@ class ChoiceAdmin(admin.ModelAdmin):
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("name",)
+    search_fields = ("name",)
