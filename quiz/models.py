@@ -16,7 +16,20 @@ class Question(models.Model):
     is_flashcard = models.BooleanField(
         default=True,
         help_text="Use this question in flashcards?"
-    )  
+    )
+
+    explanation = models.TextField(
+        blank=True,
+        help_text="Justification or explanation for the correct answer"
+    )
+
+    category = models.ForeignKey(
+        'Category',
+        on_delete=models.SET_NULL,
+        related_name='questions',
+        null=True,  # Allows questions without a category (optional)
+        blank=True  # Allows leaving blank in admin (optional)
+    )
 
     def __str__(self):
         return self.text[:50]  # Show only first 50 characters
@@ -37,3 +50,10 @@ class Choice(models.Model):
 
     def __str__(self):
         return f"{self.text} ({'Correct' if self.is_correct else 'Wrong'})"
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
