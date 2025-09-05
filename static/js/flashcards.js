@@ -14,7 +14,10 @@ var flashcards = JSON.parse(document.getElementById('flashcards-data').textConte
         };
 
         document.getElementById('next-btn').onclick = function() {
-            document.getElementById('flashcard').classList.remove('flipped');
+            const card = document.getElementById('flashcard');
+            card.classList.remove('flipped');
+            card.classList.add('flashcard-animate-out');            
+            
             setTimeout(function() {
                 let novo;
                 do {
@@ -23,10 +26,27 @@ var flashcards = JSON.parse(document.getElementById('flashcards-data').textConte
                 current = novo;
                 ultimos.push(current);
                 if (ultimos.length > 10) ultimos.shift();
-                console.log('Últimos índices:', ultimos); 
                 showFlashcard(current);
+                card.classList.remove('flashcard-animate-out');
+                card.classList.add('flashcard-animate-in');
+                setTimeout(() => card.classList.remove('flashcard-animate-in'), 400);
             }, 400);
         };
+
+        // document.getElementById('next-btn').onclick = function() {
+        //     document.getElementById('flashcard').classList.remove('flipped');
+        //     setTimeout(function() {
+        //         let novo;
+        //         do {
+        //             novo = Math.floor(Math.random() * flashcards.length);
+        //         } while (ultimos.includes(novo) && ultimos.length < flashcards.length);
+        //         current = novo;
+        //         ultimos.push(current);
+        //         if (ultimos.length > 10) ultimos.shift();
+        //         console.log('Últimos índices:', ultimos); 
+        //         showFlashcard(current);
+        //     }, 400);
+        // };
   showFlashcard(current);
 };
         // window.onload = function() { showFlashcard(current); };
