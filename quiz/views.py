@@ -47,6 +47,7 @@ def study_cards_view(request, category_id):
     question = category.questions.first()  # futuramente random ou em ordem
 
     result = None
+    selected_ids = []
 
     # Defina o tipo do input na view
     input_type = (
@@ -74,4 +75,5 @@ def study_cards_view(request, category_id):
         "question": question,
         "result": result,
         "input_type": input_type,  # Passe para o template
+        "selected_ids": selected_ids,  # <-- Passe para o template
     })
