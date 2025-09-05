@@ -1,4 +1,5 @@
- var flashcards = JSON.parse(document.getElementById('flashcards-data').textContent);
+window.onload = function() {
+var flashcards = JSON.parse(document.getElementById('flashcards-data').textContent);
         let current = 0;
         let ultimos = [];
 
@@ -13,7 +14,10 @@
         };
 
         document.getElementById('next-btn').onclick = function() {
-            document.getElementById('flashcard').classList.remove('flipped');
+            const card = document.getElementById('flashcard');
+            card.classList.remove('flipped');
+            card.classList.add('flashcard-animate-out');            
+            
             setTimeout(function() {
                 let novo;
                 do {
@@ -22,9 +26,12 @@
                 current = novo;
                 ultimos.push(current);
                 if (ultimos.length > 10) ultimos.shift();
-                console.log('Últimos índices:', ultimos); 
                 showFlashcard(current);
+                card.classList.remove('flashcard-animate-out');
+                card.classList.add('flashcard-animate-in');
+                setTimeout(() => card.classList.remove('flashcard-animate-in'), 400);
             }, 400);
         };
-
-        window.onload = function() { showFlashcard(current); };
+             
+  showFlashcard(current);
+};
