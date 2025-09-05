@@ -32,21 +32,6 @@ var flashcards = JSON.parse(document.getElementById('flashcards-data').textConte
                 setTimeout(() => card.classList.remove('flashcard-animate-in'), 400);
             }, 400);
         };
-
-        // document.getElementById('next-btn').onclick = function() {
-        //     document.getElementById('flashcard').classList.remove('flipped');
-        //     setTimeout(function() {
-        //         let novo;
-        //         do {
-        //             novo = Math.floor(Math.random() * flashcards.length);
-        //         } while (ultimos.includes(novo) && ultimos.length < flashcards.length);
-        //         current = novo;
-        //         ultimos.push(current);
-        //         if (ultimos.length > 10) ultimos.shift();
-        //         console.log('Últimos índices:', ultimos); 
-        //         showFlashcard(current);
-        //     }, 400);
-        // };
+             
   showFlashcard(current);
 };
-        // window.onload = function() { showFlashcard(current); };

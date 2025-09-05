@@ -26,11 +26,12 @@
 }
 .flip-card-back {
   transform: rotateY(180deg);
-  background-color: chocolate; /* Altere para a cor desejada */
-  color: #fff; /* Para texto branco */
+  background-color: chocolate;
+  color: #fff; 
 }
 
 /* Flashcard Animation */
+
 .flashcard-animate-out {
   animation: cardOut 0.2s forwards;
 }
