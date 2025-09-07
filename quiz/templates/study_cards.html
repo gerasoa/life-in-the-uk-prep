@@ -26,9 +26,15 @@
                     {% endif %}
                   {% endif %}
                 ">
-                  <input class="btn-check" autocomplete="off" type="checkbox" name="selected_choices" value="{{ choice.id }}" id="choice{{ forloop.counter }}"
+
+                  <div class="btn-group" role="group" aria-label="Basic checkbox toggle button group">
+                  <input type="checkbox" class="btn-check" id="choice{{ forloop.counter }}" autocomplete="off" name="selected_choices" value="{{ choice.id }}"
+                  {% if result and choice.id|stringformat:"s" in selected_ids %} checked {% endif %}>
+                  <label class="btn btn-outline-primary  w-100 text-start" for="choice{{ forloop.counter }}">{{ choice.text }}</label>
+
+                  <!-- <input class="btn-check" autocomplete="off" type="checkbox" name="selected_choices" value="{{ choice.id }}" id="choice{{ forloop.counter }}"
                     {% if result and choice.id|stringformat:"s" in selected_ids %} checked {% endif %}>
-                  <label class="btn w-100 text-start" for="choice{{ forloop.counter }}">{{ choice.text }}</label>
+                  <label class="btn w-100 text-start" for="choice{{ forloop.counter }}">{{ choice.text }}</label> -->
                 </li>
               </ul>
             </div>
