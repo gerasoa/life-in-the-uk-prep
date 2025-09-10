@@ -6,14 +6,14 @@
 <div class="container">
   <div class="row">
     <div class="col">
-      <h2 id="category-title">{{ category.name }}</h2>
+      <p id="category-title">{{ category.name }}</p>
     </div>
   </div>
   <div class="row">
     <div class="col">
       <div class="card mb-3">
         <div class="card-body">
-          <h5 id="question-text"></h5>
+          <p id="question-text"></p>
           <form id="question-form">
             <ul class="list-group" id="choices-list"></ul>
             <button type="button" id="check-btn" class="btn btn-success mt-2">Check Answer</button>
@@ -45,14 +45,19 @@
     document.getElementById('explanation').innerHTML = '';
     const ul = document.getElementById('choices-list');
     ul.innerHTML = '';
-    selected = [];
+    selected = answersState[idx].selected ? [...answersState[idx].selected] : [];
     document.getElementById('result').innerHTML = '';
+
     q.choices.forEach((c, i) => {
       const li = document.createElement('li');
-      li.className = 'list-group-item';
+      li.className = 'list-group-item rounded p-3 mb-3';
       li.style.cursor = 'pointer';
       li.textContent = c.text;
+      if (selected.includes(c.id)) {
+        li.classList.add('selected');
+      }
       li.onclick = () => {
+        if (answersState[idx].checked) return; // Prevent selection after checking
         if (q.multiple) {
           if (selected.includes(c.id)) {
             selected = selected.filter(id => id !== c.id);
@@ -66,33 +71,37 @@
           Array.from(ul.children).forEach(child => child.classList.remove('selected'));
           li.classList.add('selected');
         }
+        answersState[idx].selected = [...selected];
+        answersState[idx].checked = false;
+        answersState[idx].isCorrect = null;
+        answersState[idx].explanationShown = false;
+        document.getElementById('result').innerHTML = '';
+        document.getElementById('explanation').innerHTML = '';
       };
       ul.appendChild(li);
     });
 
-
     // Restore checked state and feedback if already checked
     if (answersState[idx].checked) {
-      // Show feedback colors
-      let correctIds = q.choices.filter(c => c.is_correct).map(c => c.id);
-      Array.from(ul.children).forEach((li, i) => {
-        const c = q.choices[i];
-        li.classList.remove('bg-success', 'bg-danger', 'text-white');
-        if (c.is_correct) {
-          li.classList.add('bg-success', 'text-white');
-        } else if (selected.includes(c.id)) {
-          li.classList.add('bg-danger', 'text-white');
-        }
-      });
-      document.getElementById('result').innerHTML = answersState[idx].isCorrect
-        ? '<div class="alert alert-success">✅ Correct!</div>'
-        : '<div class="alert alert-danger">❌ Incorrect</div>';
-      if (answersState[idx].explanationShown && q.explanation) {
-        document.getElementById('explanation').innerHTML =
-          `<div class="alert alert-info"><strong>Explanation:</strong> ${q.explanation}</div>`;
-      }
+      // let correctIds = q.choices.filter(c => c.is_correct).map(c => c.id);
+      // Array.from(ul.children).forEach((li, i) => {
+      //   const c = q.choices[i];
+      //   li.classList.remove('bg-success', 'bg-danger', 'text-white', 'selected');
+      //   if (c.is_correct) {
+      //     li.classList.add('bg-success', 'text-white');
+      //   } else if (selected.includes(c.id) && !c.is_correct) {
+      //     li.classList.add('bg-danger', 'text-white');
+      //   }
+      // });
+      applyFeedback(ul, q, selected);
+      // document.getElementById('result').innerHTML = answersState[idx].isCorrect
+      //   ? '<div class="alert alert-success">✅ Correct!</div>'
+      //   : '<div class="alert alert-danger">❌ Incorrect</div>';
+      // if (answersState[idx].explanationShown && q.explanation) {
+      //   document.getElementById('explanation').innerHTML =
+      //     `<div class="alert alert-info"><strong>Explanation:</strong> ${q.explanation}</div>`;
+      // }
     }
-
 
     // Botões
     document.getElementById('prev-btn').disabled = idx === 0;
@@ -105,19 +114,20 @@
     const ul = document.getElementById('choices-list');
     let correctIds = q.choices.filter(c => c.is_correct).map(c => c.id);
     let isCorrect = selected.length === correctIds.length && selected.every(id => correctIds.includes(id));
-    // Feedback visual
-    Array.from(ul.children).forEach((li, i) => {
-      const c = q.choices[i];
-      li.classList.remove('bg-success', 'bg-danger', 'text-white');
-      if (c.is_correct) {
-        li.classList.add('bg-success', 'text-white');
-      } else if (selected.includes(c.id)) {
-        li.classList.add('bg-danger', 'text-white');
-      }
-    });
-    document.getElementById('result').innerHTML = isCorrect
-      ? '<div class="alert alert-success">✅ Correct!</div>'
-      : '<div class="alert alert-danger">❌ Incorrect</div>';
+    // Feedback visual: only correct in green, wrong selected in red
+    // Array.from(ul.children).forEach((li, i) => {
+    //   const c = q.choices[i];
+    //   li.classList.remove('bg-success', 'bg-danger', 'text-white', 'selected');
+    //   if (c.is_correct) {
+    //     li.classList.add('bg-success', 'text-white');
+    //   } else if (selected.includes(c.id) && !c.is_correct) {
+    //     li.classList.add('bg-danger', 'text-white');
+    //   }
+    // });
+    applyFeedback(ul, q, selected);
+    // document.getElementById('result').innerHTML = isCorrect
+    //   ? '<div class="alert alert-success">✅ Correct!</div>'
+    //   : '<div class="alert alert-danger">❌ Incorrect</div>';
 
     document.getElementById('explanation').innerHTML = q.explanation
       ? `<div class="alert alert-info"><strong>Explanation:</strong> ${q.explanation}</div>`
@@ -156,6 +166,27 @@
     isCorrect: null,
     explanationShown: false
   }));
+
+  function applyFeedback(ul, q, selected) {
+    Array.from(ul.children).forEach((li, i) => {
+      const c = q.choices[i];
+      li.classList.remove('bg-success', 'bg-danger', 'text-white', 'selected');
+      // Remove old icon if exists
+      const oldIcon = li.querySelector('.result-icon');
+      if (oldIcon) li.removeChild(oldIcon);
+      let icon = document.createElement('i');
+      icon.className = 'result-icon ms-2 bi float-end fs-5';
+      if (c.is_correct) {
+        li.classList.add('bg-success', 'text-white');
+        icon.classList.add('bi-check-circle-fill', 'text-white');
+        li.appendChild(icon);
+      } else if (selected.includes(c.id) && !c.is_correct) {
+        li.classList.add('bg-danger', 'text-white');
+        icon.classList.add('bi-x-circle-fill', 'text-white');
+      li.appendChild(icon);
+      }
+    });
+  }
 
   // Inicialização
   renderQuestion(current);
