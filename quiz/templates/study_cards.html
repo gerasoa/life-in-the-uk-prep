@@ -25,7 +25,7 @@
     </div>
   </div>
   <div class="row mt-3">
-    <div class="col d-flex gap-2">
+    <div class="col d-flex justify-content-between align-items-center">
       <button id="prev-btn" class="btn btn-secondary" type="button">Previous</button>
       <button id="next-btn" class="btn btn-primary" type="button">Next</button>
       <button id="finish-btn" class="btn btn-danger d-none" type="button">Finish</button>
@@ -34,6 +34,14 @@
 </div>
 
 <script>
+ function isMobile() {
+  // Detecta apenas smartphones, não tablets
+  return /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) 
+    && !/iPad|Tablet|PlayBook|Silk|Kindle|Nexus 7|Nexus 10|KFAPWI/i.test(navigator.userAgent);
+}
+
+  const mobile = isMobile();
+
   // Dados vindos do backend
   const questions = JSON.parse('{{ questions_json|escapejs }}');
   let current = 0;
@@ -48,9 +56,14 @@
     selected = answersState[idx].selected ? [...answersState[idx].selected] : [];
     document.getElementById('result').innerHTML = '';
 
+    // Mostra ou esconde o botão conforme o dispositivo
+    document.getElementById('check-btn').style.display = mobile ? 'none' : 'inline-block';
+    document.getElementById('category-title').style.display = mobile ? 'none' : 'inline-block';
+    updateNavButtons();
+
     q.choices.forEach((c, i) => {
       const li = document.createElement('li');
-      li.className = 'list-group-item rounded p-3 mb-3';
+      li.className = 'list-group-item rounded p-2 mb-2';
       li.style.cursor = 'pointer';
       li.textContent = c.text;
       if (selected.includes(c.id)) {
@@ -77,6 +90,12 @@
         answersState[idx].explanationShown = false;
         document.getElementById('result').innerHTML = '';
         document.getElementById('explanation').innerHTML = '';
+
+        // Se for mobile, checa automaticamente
+        if (mobile) {
+          checkAnswer();
+        }
+
       };
       ul.appendChild(li);
     });
@@ -97,10 +116,10 @@
       // document.getElementById('result').innerHTML = answersState[idx].isCorrect
       //   ? '<div class="alert alert-success">✅ Correct!</div>'
       //   : '<div class="alert alert-danger">❌ Incorrect</div>';
-      // if (answersState[idx].explanationShown && q.explanation) {
-      //   document.getElementById('explanation').innerHTML =
-      //     `<div class="alert alert-info"><strong>Explanation:</strong> ${q.explanation}</div>`;
-      // }
+      if (answersState[idx].explanationShown && q.explanation) {
+        document.getElementById('explanation').innerHTML =
+          `<div class="alert alert-info"><strong>Explanation:</strong> ${q.explanation}</div>`;
+      }
     }
 
     // Botões
@@ -141,6 +160,29 @@
       explanationShown: true
     };
   };
+
+  function checkAnswer() {
+    const q = questions[current];
+    const ul = document.getElementById('choices-list');
+    let correctIds = q.choices.filter(c => c.is_correct).map(c => c.id);
+    let isCorrect = selected.length === correctIds.length && selected.every(id => correctIds.includes(id));
+    applyFeedback(ul, q, selected);
+    // document.getElementById('result').innerHTML = isCorrect
+    //   ? '<div class="alert alert-success">✅ Correct!</div>'
+    //   : '<div class="alert alert-danger">❌ Incorrect</div>';
+
+    document.getElementById('explanation').innerHTML = q.explanation
+      ? `<div class="alert alert-info"><strong>Explanation:</strong> ${q.explanation}</div>`
+      : '';
+
+    // Save state
+    answersState[current] = {
+      selected: [...selected],
+      checked: true,
+      isCorrect: isCorrect,
+      explanationShown: true
+    };
+  }
 
   document.getElementById('next-btn').onclick = function() {
     if (current < questions.length - 1) {
@@ -187,6 +229,21 @@
       }
     });
   }
+  function updateNavButtons() {
+      // Troca o estilo dos botões para links no mobile
+      const prevBtn = document.getElementById('prev-btn');
+      const nextBtn = document.getElementById('next-btn');
+      const finishBtn = document.getElementById('finish-btn');
+      if (mobile) {
+        prevBtn.className = 'btn btn-link';
+        nextBtn.className = 'btn btn-link';
+        finishBtn.className = 'btn btn-link d-none';
+      } else {
+        prevBtn.className = 'btn btn-secondary';
+        nextBtn.className = 'btn btn-primary';
+        finishBtn.className = 'btn btn-danger d-none';
+      }
+    }
 
   // Inicialização
   renderQuestion(current);
