@@ -137,9 +137,9 @@
   <div class="row justify-content-center mt-3">
     <div class="col-md-6">
       <div class="d-grid gap-3">
-        <button class="btn btn-outline-secondary" id="flip-button" type="button">👁️ Mostrar Resposta</button>
-        <button class="btn btn-success" id="next-btn" type="button">➡️ Próximo</button>
-        <button class="btn btn-warning btn-favorite" id="favorite-btn" type="button">⭐ Favoritar</button>
+        <!-- <button class="btn btn-outline-secondary" id="flip-button" type="button">👁️ Show Answer</button> -->
+        <button class="btn btn-success" id="next-btn" type="button">➡️ Next</button>
+        <!-- <button class="btn btn-warning btn-favorite" id="favorite-btn" type="button">⭐ Favorite</button> -->
       </div>
     </div>
   </div>
@@ -157,23 +157,25 @@
 <script>
   window.onload = function () {
     const flashcards = JSON.parse(document.getElementById('flashcards-data').textContent);
+    const totalFlashcards = flashcards.length - 1; // remove o último item (mensagem)
     const questionEl = document.getElementById('question');
     const answerEl = document.getElementById('answer');
     const flipBtn = document.getElementById('flip-btn');
-    const flipButton = document.getElementById('flip-button');
+    // const flipButton = document.getElementById('flip-button');
     const nextBtn = document.getElementById('next-btn');
-    const favoriteBtn = document.getElementById('favorite-btn');
+    // const favoriteBtn = document.getElementById('favorite-btn');
     const progressBar = document.getElementById('progress-bar');
     const card = document.getElementById('flashcard');
+    
 
     let current = -1;
     let vistos = new Set();
     let started = false;
     let favorites = new Set();
 
-    flipButton.disabled = true;
+    // flipButton.disabled = true;
     nextBtn.disabled = true;
-    favoriteBtn.disabled = true;
+    // favoriteBtn.disabled = true;
 
     function showStartCard() {
       questionEl.innerHTML = '<span style="font-size:1.4rem; font-weight:bold; color:#0078D4; animation:pulse 1.5s infinite; cursor:pointer;">👆 Tap here to start</span>';
@@ -189,35 +191,35 @@
       answerEl.textContent = flashcards[idx].answer;
       card.classList.remove('flipped');
       updateProgress(idx);
-      updateFavoriteButton(idx);
+    //   updateFavoriteButton(idx);
     }
 
     function updateProgress() {
-    const percent = Math.round((vistos.size / flashcards.length) * 100);
+    const percent = Math.round((vistos.size / totalFlashcards) * 100);
     progressBar.style.width = percent + '%';
-    progressBar.textContent = `${vistos.size}/${flashcards.length}`;
+    progressBar.textContent = `${vistos.size}/${totalFlashcards}`;
     progressBar.setAttribute('aria-valuenow', percent);
     }
 
 
 
-    function updateFavoriteButton(idx) {
-      if (favorites.has(idx)) {
-        favoriteBtn.classList.add('active');
-        favoriteBtn.textContent = '⭐ Favorito';
-      } else {
-        favoriteBtn.classList.remove('active');
-        favoriteBtn.textContent = '⭐ Favoritar';
-      }
-    }
+    // function updateFavoriteButton(idx) {
+    //   if (favorites.has(idx)) {
+    //     favoriteBtn.classList.add('active');
+    //     favoriteBtn.textContent = '⭐ Favorito';
+    //   } else {
+    //     favoriteBtn.classList.remove('active');
+    //     favoriteBtn.textContent = '⭐ Favoritar';
+    //   }
+    // }
 
 function startFlashcards() {
   if (!started) {
     started = true;
     current = 0;
-    flipButton.disabled = false;
+    // flipButton.disabled = false;
     nextBtn.disabled = false;
-    favoriteBtn.disabled = false;
+    // favoriteBtn.disabled = false;
     showFlashcard(current);
     updateProgress(); // ← ensure progress starts at 1
   }
@@ -229,7 +231,7 @@ function nextFlashcard() {
   current++;
 
   if (current < flashcards.length) {
-    vistos.add(current); // ← Track progress
+    vistos.add(current);
     flipBtn.classList.remove('flipped');
     flipBtn.classList.add('flashcard-slide-out');
 
@@ -240,18 +242,28 @@ function nextFlashcard() {
       flipBtn.classList.add('flashcard-slide-in');
       setTimeout(() => flipBtn.classList.remove('flashcard-slide-in'), 400);
     }, 400);
-  } else if (current === flashcards.length) {
+} else {
+  // Hide flashcard and show completion message
+  document.getElementById('flashcard').style.display = 'none';
 
-    flipBtn.classList.remove('flipped'); // ensure front side is shown
-    questionEl.textContent = flashcards[flashcards.length - 1].question;
-    answerEl.textContent = flashcards[flashcards.length - 1].answer;
-    updateProgress();
-    updateFavoriteButton(flashcards.length - 1);
+  const container = document.querySelector('.container-lg');
+  const endMessage = document.createElement('div');
+  endMessage.className = 'mt-5';
+  endMessage.innerHTML = `
+    <h3 style="color:#0078D4;">🎉 You’ve completed all flashcards!</h3>
+    <p>Click the button below to restart the session.</p>
+    <button class="btn btn-primary mt-3" id="restart-btn">🔄 Restart</button>
+  `;
+  container.appendChild(endMessage);
 
-    nextBtn.textContent = '🔄 Restart';
-    nextBtn.onclick = restartSession;
-    }
+  nextBtn.style.display = 'none';
+//   flipButton.style.display = 'none';
+//   favoriteBtn.style.display = 'none';
+
+  document.getElementById('restart-btn').onclick = restartSession;
 }
+}
+
 
 
 
@@ -266,11 +278,11 @@ function nextFlashcard() {
       }
     };
 
-    flipButton.onclick = function () {
-      if (started) {
-        card.classList.toggle('flipped');
-      }
-    };
+    // flipButton.onclick = function () {
+    //   if (started) {
+    //     card.classList.toggle('flipped');
+    //   }
+    // };
 
     nextBtn.onclick = function () {
       if (started) {
@@ -278,34 +290,47 @@ function nextFlashcard() {
       }
     };
 
-    favoriteBtn.onclick = function () {
-      if (started) {
-        if (favorites.has(current)) {
-          favorites.delete(current);
-        } else {
-          favorites.add(current);
-        }
-        updateFavoriteButton(current);
-      }
-    };
+    // favoriteBtn.onclick = function () {
+    //   if (started) {
+    //     if (favorites.has(current)) {
+    //       favorites.delete(current);
+    //     } else {
+    //       favorites.add(current);
+    //     }
+    //     // updateFavoriteButton(current);
+    //   }
+    // };
 
     function restartSession() {
-        current = -1;
-        started = false;
-        flipButton.disabled = true;
-        nextBtn.disabled = true;
-        favoriteBtn.disabled = true;
-        nextBtn.textContent = '➡️ Next';
-        vistos.clear(); // ← limpa o histórico de cartões vistos
-        updateProgress(); // ← atualiza a barra para refletir o reset
+  current = -1;
+  started = false;
+  vistos.clear();
+  updateProgress();
 
-        nextBtn.onclick = function () {
-            if (started) {
-            nextFlashcard();
-            }
-        };
-        showStartCard();
-        }
+  // Restore flashcard
+  document.getElementById('flashcard').style.display = 'block';
+
+  // Remove end message
+  const endMsg = document.querySelector('.container-lg .mt-5');
+  if (endMsg) endMsg.remove();
+
+//   flipButton.style.display = 'inline-block';
+  nextBtn.style.display = 'inline-block';
+//   favoriteBtn.style.display = 'inline-block';
+
+//   flipButton.disabled = true;
+  nextBtn.disabled = true;
+//   favoriteBtn.disabled = true;
+  nextBtn.textContent = '➡️ Next';
+  nextBtn.onclick = function () {
+    if (started) {
+      nextFlashcard();
+    }
+  };
+
+  showStartCard();
+}
+
 
 
     showStartCard();
