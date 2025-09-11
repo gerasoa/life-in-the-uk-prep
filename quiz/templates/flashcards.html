@@ -22,6 +22,10 @@
 
     .flip-card-front,
     .flip-card-back {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
         position: absolute;
         width: 100%;
         height: 100%;
@@ -45,7 +49,15 @@
     .flip-card-inner.flipped {
         transform: rotateY(180deg);
     }
-
+.card-text,
+.card-text-back {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px; /* ajuste conforme necessário */
+}
     .btn-primary {
         background-color: #0078D4;
         border: none;
@@ -146,13 +158,13 @@
                 <div class="flip-card-inner" id="flip-btn">
                     <!-- Front -->
                     <div class="flip-card-front">
-                        <h5 class="card-title">Question</h5>
+                        <!-- <h5 class="card-title">Question</h5> -->
                         <div class="card-text" id="question">Loading...</div>
                     </div>
                     <!-- Back -->
                     <div class="flip-card-back">
-                        <h5 class="card-title">Answer</h5>
-                        <div class="card-text" id="answer">Loading...</div>
+                        <!-- <h5 class="card-title-back">Answer</h5> -->
+                        <div class="card-text-back" id="answer">Loading...</div>
                     </div>
                 </div>
             </div>

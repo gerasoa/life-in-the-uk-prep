@@ -175,9 +175,16 @@ html, body {
   font-weight: 600;
   color: #0078D4;
 }
+.card-title-back {
+  font-weight: 600;
+  color: #e6f0ff;
+}
 
 .card-text {
   color: #444;
+}
+.card-text-back {
+  color: #e6f0ff;
 }
 
 /* Responsive tweaks */
