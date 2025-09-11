@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-lg py-5">
+
+  <!-- Hero Section -->
+  <div class="row justify-content-center text-center mb-5">
+    <div class="col-md-8">
+      <h1 class="display-5 fw-bold text-primary">Your Path to British Citizenship Starts Here</h1>
+      <p class="lead mt-3">Prepare for the Life in the UK Test with smart tools, clear guidance, and practical practice.</p>
+      <a href="{% url 'categories' %}" class="btn btn-primary btn-lg mt-4">Start Practising</a>
+    </div>
+  </div>
+
+  <!-- About the Test -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+      <h2 class="fw-semibold text-start mb-3">📘 What Is the Life in the UK Test?</h2>
+      <p>The Life in the UK Test is a mandatory step for those applying for permanent residence or British citizenship. It assesses your understanding of British history, values, traditions, and government. Our platform helps you prepare with clarity and confidence.</p>
+    </div>
+  </div>
+
+  <!-- How the App Helps -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+      <h2 class="fw-semibold text-start mb-3">🧠 How This App Supports Your Preparation</h2>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">✅ Study by category and topic</li>
+        <li class="list-group-item">✅ Practise with realistic questions and instant feedback</li>
+        <li class="list-group-item">✅ Understand each answer with clear explanations</li>
+        <li class="list-group-item">✅ Track your progress and revisit difficult areas</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Tools Offered -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+      <h2 class="fw-semibold text-start mb-3">🛠️ Study Tools Available</h2>
+
+      <!-- Flashcards -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title text-primary">Flashcards</h5>
+          <p class="card-text">Quickly review key facts and concepts with interactive flashcards. Ideal for short study sessions and memory reinforcement.</p>
+          <a href="{% url 'flashcards' %}" class="btn btn-outline-primary">View Flashcards</a>
+        </div>
+      </div>
+
+      <!-- Practice Questions -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title text-primary">Practice Questions</h5>
+          <p class="card-text">Answer multiple-choice questions with real-time feedback and detailed explanations. Perfect for testing your knowledge and building confidence.</p>
+          <a href="{% url 'categories' %}" class="btn btn-outline-primary">Start Practising</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Resources -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+      <h2 class="fw-semibold text-start mb-3">📎 Useful Links</h2>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><a href="#" class="text-decoration-none">Frequently Asked Questions (FAQ)</a></li>
+        <li class="list-group-item"><a href="#" class="text-decoration-none">Find a Test Centre Near You</a></li>
+        <li class="list-group-item"><a href="#" class="text-decoration-none">Contact Us</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Newsletter Signup -->
+  <div class="row justify-content-center mb-5">
+    <div class="col-md-8 text-center">
+      <h2 class="fw-semibold mb-3">📩 Stay Informed</h2>
+      <p>Sign up for our newsletter to receive study tips, updates, and reminders straight to your inbox.</p>
+      <form method="post" action="#">
+        {% csrf_token %}
+        <div class="input-group mb-3">
+          <input type="email" name="email" class="form-control" placeholder="Enter your email address" required>
+          <button class="btn btn-primary" type="submit">Subscribe</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
