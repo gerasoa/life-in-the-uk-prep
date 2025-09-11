@@ -21,6 +21,42 @@
   margin-left: 8px;
   float: right;
 }
+
+#results-container .list-group-item {
+  background: #f8f9fa;
+}
+}
+#answers-list .list-group-item {
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  background-color: #ffffff;
+  padding: 16px;
+  transition: background-color 0.2s ease;
+  border: none;
+}
+
+#answers-list .list-group-item:hover {
+  background-color: #f0f8ff;
+}
+
+#answers-list strong {
+  color: #0078D4;
+}
+
+#answers-list em {
+  color: #888;
+}
+.badge {
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+#answers-list .explanation {
+  background-color: #f0f2f5;
+  border-left: 4px solid #0078D4;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 6px;
 }
 
 </style>
@@ -47,11 +83,6 @@
     </div>
   </div>
   <div class="row justify-content-center mb-3 mt-3">
-    <!-- <div class="col d-flex justify-content-between align-items-center">
-      <button id="prev-btn" class="btn btn-secondary" type="button">Previous</button>
-      <button id="next-btn" class="btn btn-primary" type="button">Next</button>
-      <button id="finish-btn" class="btn btn-danger d-none" type="button">Finish</button>
-    </div> -->
     <div class="col col-md-8 d-flex justify-content-between mt-4">
       <button id="prev-btn" class="btn btn-outline-secondary">Previous</button>
       <button id="next-btn" class="btn btn-outline-primary">Next</button>
@@ -60,7 +91,16 @@
 
   </div>
 </div>
-
+<div id="results-container" class="container-lg py-4 d-none">
+  <div class="row justify-content-center">
+    <div class="col col-md-8">
+      <h2 class="mb-4 text-primary fw-semibold">Your Results</h2>
+      <div id="score-summary" class="mb-4"></div>
+      <ul id="answers-list" class="list-group"></ul>
+      <a href="{% url 'categories' %}" class="btn btn-primary mt-4">Back to Categories</a>
+    </div>
+  </div>
+</div>
 <script>
  function isMobile() {
   // Detecta apenas smartphones, não tablets
@@ -129,21 +169,8 @@
     });
 
     // Restore checked state and feedback if already checked
-    if (answersState[idx].checked) {
-      // let correctIds = q.choices.filter(c => c.is_correct).map(c => c.id);
-      // Array.from(ul.children).forEach((li, i) => {
-      //   const c = q.choices[i];
-      //   li.classList.remove('bg-success', 'bg-danger', 'text-white', 'selected');
-      //   if (c.is_correct) {
-      //     li.classList.add('bg-success', 'text-white');
-      //   } else if (selected.includes(c.id) && !c.is_correct) {
-      //     li.classList.add('bg-danger', 'text-white');
-      //   }
-      // });
-      applyFeedback(ul, q, selected);
-      // document.getElementById('result').innerHTML = answersState[idx].isCorrect
-      //   ? '<div class="alert alert-success">✅ Correct!</div>'
-      //   : '<div class="alert alert-danger">❌ Incorrect</div>';
+    if (answersState[idx].checked) {     
+      applyFeedback(ul, q, selected);      
       if (answersState[idx].explanationShown && q.explanation) {
         document.getElementById('explanation').innerHTML =
           `<div class="alert alert-info"><strong>Explanation:</strong> ${q.explanation}</div>`;
@@ -160,21 +187,8 @@
     const q = questions[current];
     const ul = document.getElementById('choices-list');
     let correctIds = q.choices.filter(c => c.is_correct).map(c => c.id);
-    let isCorrect = selected.length === correctIds.length && selected.every(id => correctIds.includes(id));
-    // Feedback visual: only correct in green, wrong selected in red
-    // Array.from(ul.children).forEach((li, i) => {
-    //   const c = q.choices[i];
-    //   li.classList.remove('bg-success', 'bg-danger', 'text-white', 'selected');
-    //   if (c.is_correct) {
-    //     li.classList.add('bg-success', 'text-white');
-    //   } else if (selected.includes(c.id) && !c.is_correct) {
-    //     li.classList.add('bg-danger', 'text-white');
-    //   }
-    // });
+    let isCorrect = selected.length === correctIds.length && selected.every(id => correctIds.includes(id));    
     applyFeedback(ul, q, selected);
-    // document.getElementById('result').innerHTML = isCorrect
-    //   ? '<div class="alert alert-success">✅ Correct!</div>'
-    //   : '<div class="alert alert-danger">❌ Incorrect</div>';
 
     document.getElementById('explanation').innerHTML = q.explanation
       ? `<div class="alert alert-info"><strong>Explanation:</strong> ${q.explanation}</div>`
@@ -195,10 +209,6 @@
     let correctIds = q.choices.filter(c => c.is_correct).map(c => c.id);
     let isCorrect = selected.length === correctIds.length && selected.every(id => correctIds.includes(id));
     applyFeedback(ul, q, selected);
-    // document.getElementById('result').innerHTML = isCorrect
-    //   ? '<div class="alert alert-success">✅ Correct!</div>'
-    //   : '<div class="alert alert-danger">❌ Incorrect</div>';
-
     document.getElementById('explanation').innerHTML = q.explanation
       ? `<div class="alert alert-info"><strong>Explanation:</strong> ${q.explanation}</div>`
       : '';
@@ -227,7 +237,7 @@
   };
 
   document.getElementById('finish-btn').onclick = function() {
-    window.location.href = "{% url 'categories' %}";
+    showResults();
   };
 
   let answersState = questions.map(() => ({
@@ -274,7 +284,38 @@
     }
 
 
+function showResults() {
+  // Esconde o quiz
+  document.querySelector('.container-lg.py-4').classList.add('d-none');
+  document.getElementById('results-container').classList.remove('d-none');
 
+  // Calcula o score
+  let correctCount = answersState.filter(a => a.isCorrect).length;
+  let percent = Math.round((correctCount / questions.length) * 100);
+
+  document.getElementById('score-summary').innerHTML =
+    `<h4>Score: ${correctCount} / ${questions.length} (${percent}%)</h4>`;
+
+  // Lista de respostas
+  const ul = document.getElementById('answers-list');
+  ul.innerHTML = '';
+  questions.forEach((q, idx) => {
+    const user = answersState[idx];
+    const li = document.createElement('li');
+    li.className = 'list-group-item mb-2';
+    let userChoices = q.choices.filter(c => user.selected.includes(c.id)).map(c => c.text).join(', ') || '<em>No answer</em>';
+    let correctChoices = q.choices.filter(c => c.is_correct).map(c => c.text).join(', ');
+    li.innerHTML = `
+      <div><strong>Q${idx+1}:</strong> ${q.question}</div>
+      <div><strong>Your answer:</strong> ${userChoices}</div>
+      <div><strong>Correct answer:</strong> ${correctChoices}</div>
+      ${user.isCorrect ? '<span class="badge bg-success">Correct</span>' : '<span class="badge bg-danger">Incorrect</span>'}
+     
+      ${q.explanation ? `<div class="explanation"><strong>Explanation:</strong> ${q.explanation}</div>` : ''}
+    `;
+    ul.appendChild(li);
+  });
+}
 
 
 
@@ -287,5 +328,7 @@
   background: #0d6efd !important;
   color: #fff !important;
 }
+
+
 </style>
 {% endblock %}
